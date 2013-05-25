@@ -7,6 +7,12 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>official-build-key.pub</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
@@ -70,6 +76,9 @@
   <ItemGroup>
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
+    <None Include="official-build-key.pfx" />
+    <None Include="official-build-key.pub" />
+    <None Include="privatekey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
