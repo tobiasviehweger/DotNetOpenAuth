@@ -76,48 +76,6 @@ namespace DotNetOpenAuth.Configuration {
 			get { return this.CustomType == null && string.IsNullOrEmpty(this.XamlSource); }
 		}
 
-		/// <summary>
-		/// Creates an instance of the type described in the .config file.
-		/// </summary>
-		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
-		/// <returns>The newly instantiated type.</returns>
-		public T CreateInstance(T defaultValue) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
-			return this.CreateInstance(defaultValue, false);
-		}
-
-		/// <summary>
-		/// Creates an instance of the type described in the .config file.
-		/// </summary>
-		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
-		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
-		/// <returns>The newly instantiated type.</returns>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public T CreateInstance(T defaultValue, bool allowInternals) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
-			if (this.CustomType != null) {
-				if (!allowInternals) {
-					// Although .NET will usually prevent our instantiating non-public types,
-					// it will allow our instantiation of internal types within this same assembly.
-					// But we don't want the host site to be able to do this, so we check ourselves.
-					ErrorUtilities.VerifyArgument((this.CustomType.Attributes & TypeAttributes.Public) != 0, Strings.ConfigurationTypeMustBePublic, this.CustomType.FullName);
-				}
-				return (T)Activator.CreateInstance(this.CustomType);
-			} else if (!string.IsNullOrEmpty(this.XamlSource)) {
-				string source = this.XamlSource;
-				if (source.StartsWith("~/", StringComparison.Ordinal)) {
-					ErrorUtilities.VerifyHost(HttpContext.Current != null, Strings.ConfigurationXamlReferenceRequiresHttpContext, this.XamlSource);
-					source = HttpContext.Current.Server.MapPath(source);
-				}
-				using (Stream xamlFile = File.OpenRead(source)) {
-					return CreateInstanceFromXaml(xamlFile);
-				}
-			} else {
-				return defaultValue;
-			}
-		}
 
 		/// <summary>
 		/// Creates the instance from xaml.

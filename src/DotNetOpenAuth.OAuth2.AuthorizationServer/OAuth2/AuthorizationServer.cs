@@ -82,31 +82,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Reads in a client's request for the Authorization Server to obtain permission from
-		/// the user to authorize the Client's access of some protected resource(s).
-		/// </summary>
-		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
-		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request = null) {
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
-
-			EndUserAuthorizationRequest message;
-			if (this.Channel.TryReadFromRequest(request, out message)) {
-				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
-					// Clients with no secrets can only request implicit grant types.
-					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(client.HasNonEmptySecret, Protocol.EndUserAuthorizationRequestErrorCodes.UnauthorizedClient);
-				}
-			}
-
-			return message;
-		}
-
-		/// <summary>
 		/// Approves an authorization request and sends an HTTP response to the user agent to redirect the user back to the Client.
 		/// </summary>
 		/// <param name="authorizationRequest">The authorization request to approve.</param>

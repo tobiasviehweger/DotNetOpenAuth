@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
-	using System.Web;
 
 	/// <summary>
 	/// A collection of error checking and reporting methods.
@@ -352,16 +351,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
-		/// <summary>
-		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current"/> == <c>null</c></exception>
-		[Pure]
-		internal static void VerifyHttpContext() {
-			Contract.Ensures(HttpContext.Current != null);
-			Contract.Ensures(HttpContext.Current.Request != null);
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-		}
 
 		/// <summary>
 		/// Obtains a value from the dictionary if possible, or throws a <see cref="ProtocolException"/> if it's missing.

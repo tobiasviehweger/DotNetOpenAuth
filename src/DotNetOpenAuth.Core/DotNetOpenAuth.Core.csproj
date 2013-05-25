@@ -4,6 +4,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -19,6 +21,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assumes.cs" />
+    <Compile Include="HttpEncoder.cs" />
+    <Compile Include="HttpUtility.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
@@ -56,7 +60,7 @@
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
-    <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
+    <Compile Include="Messaging\OutgoingWebResponse.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
@@ -85,7 +89,6 @@
     <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
     <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
     <Compile Include="Messaging\Channel.cs" />
-    <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
@@ -102,7 +105,6 @@
     <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
-    <Compile Include="Messaging\OutgoingWebResponse.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
@@ -131,7 +133,6 @@
     <Compile Include="IEmbeddedResourceRetrieval.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
-    <Compile Include="Loggers\Log4NetLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

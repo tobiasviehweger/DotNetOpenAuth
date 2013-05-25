@@ -11,8 +11,6 @@ namespace DotNetOpenAuth {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
-	using System.Web;
-	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -78,39 +76,6 @@ namespace DotNetOpenAuth {
 			} else {
 				// The port must be explicitly given anyway.
 				return builder.ToString();
-			}
-		}
-
-		/// <summary>
-		/// Validates that a URL will be resolvable at runtime.
-		/// </summary>
-		/// <param name="page">The page hosting the control that receives this URL as a property.</param>
-		/// <param name="designMode">If set to <c>true</c> the page is in design-time mode rather than runtime mode.</param>
-		/// <param name="value">The URI to check.</param>
-		/// <exception cref="UriFormatException">Thrown if the given URL is not a valid, resolvable URI.</exception>
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Just to throw an exception on invalid input.")]
-		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
-			if (string.IsNullOrEmpty(value)) {
-				return;
-			}
-
-			if (page != null && !designMode) {
-				Contract.Assume(page.Request != null);
-
-				// Validate new value by trying to construct a Realm object based on it.
-				string relativeUrl = page.ResolveUrl(value);
-				Contract.Assume(page.Request.Url != null);
-				Contract.Assume(relativeUrl != null);
-				new Uri(page.Request.Url, relativeUrl); // throws an exception on failure.
-			} else {
-				// We can't fully test it, but it should start with either ~/ or a protocol.
-				if (Regex.IsMatch(value, @"^https?://")) {
-					new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-				} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-					// this is valid too
-				} else {
-					throw new UriFormatException();
-				}
 			}
 		}
 	}

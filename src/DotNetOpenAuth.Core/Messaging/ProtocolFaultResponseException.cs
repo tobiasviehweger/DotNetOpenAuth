@@ -57,13 +57,5 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public IDirectResponseProtocolMessage ErrorResponseMessage { get; private set; }
 
-		/// <summary>
-		/// Creates the HTTP response to forward to the client to report the error.
-		/// </summary>
-		/// <returns>The HTTP response.</returns>
-		public OutgoingWebResponse CreateErrorResponse() {
-			var response = this.channel.PrepareResponse(this.ErrorResponseMessage);
-			return response;
-		}
 	}
 }

@@ -104,63 +104,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		}
 
 		/// <summary>
-		/// Searches an incoming HTTP request for data that could be used to assemble
-		/// a protocol request message.
-		/// </summary>
-		/// <param name="request">The HTTP request to search.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
-			// First search the Authorization header.
-			string authorization = request.Headers[HttpRequestHeaders.Authorization];
-			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
-			fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
-
-			// Scrape the entity
-			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeaders.ContentType])) {
-				var contentType = new ContentType(request.Headers[HttpRequestHeaders.ContentType]);
-				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
-					foreach (string key in request.Form) {
-						if (key != null) {
-							fields.Add(key, request.Form[key]);
-						} else {
-							Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.Form[key]);
-						}
-					}
-				}
-			}
-
-			// Scrape the query string
-			var qs = request.GetQueryStringBeforeRewriting();
-			foreach (string key in qs) {
-				if (key != null) {
-					fields.Add(key, qs[key]);
-				} else {
-					Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", qs[key]);
-				}
-			}
-
-			MessageReceivingEndpoint recipient;
-			try {
-				recipient = request.GetRecipient();
-			} catch (ArgumentException ex) {
-				Logger.OAuth.WarnFormat("Unrecognized HTTP request: " + ex.ToString());
-				return null;
-			}
-
-			// Deserialize the message using all the data we've collected.
-			var message = (IDirectedProtocolMessage)this.Receive(fields, recipient);
-
-			// Add receiving HTTP transport information required for signature generation.
-			var signedMessage = message as ITamperResistantOAuthMessage;
-			if (signedMessage != null) {
-				signedMessage.Recipient = request.GetPublicFacingUrl();
-				signedMessage.HttpMethod = request.HttpMethod;
-			}
-
-			return message;
-		}
-
-		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>

@@ -10,7 +10,6 @@ namespace DotNetOpenAuth {
 	using System.Globalization;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
-	using log4net.Core;
 
 	/// <summary>
 	/// A general logger for the entire DotNetOpenAuth library.
@@ -143,7 +142,7 @@ namespace DotNetOpenAuth {
 		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
 		internal static ILog Create(string name) {
 			Requires.NotNullOrEmpty(name, "name");
-			return InitializeFacade(name);
+            return new NoOpLogger();
 		}
 
 		/// <summary>
@@ -170,15 +169,5 @@ namespace DotNetOpenAuth {
 			return Create(type.FullName);
 		}
 
-		/// <summary>
-		/// Discovers the presence of Log4net.dll and other logging mechanisms
-		/// and returns the best available logger.
-		/// </summary>
-		/// <param name="name">The name of the log to initialize.</param>
-		/// <returns>The <see cref="ILog"/> instance of the logger to use.</returns>
-		private static ILog InitializeFacade(string name) {
-			ILog result = Log4NetLogger.Initialize(name) ?? TraceLogger.Initialize(name) ?? NoOpLogger.Initialize();
-			return result;
-		}
 	}
 }

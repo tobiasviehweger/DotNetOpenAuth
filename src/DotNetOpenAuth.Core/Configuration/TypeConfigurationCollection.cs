@@ -38,17 +38,6 @@ namespace DotNetOpenAuth.Configuration {
 			}
 		}
 
-		/// <summary>
-		/// Creates instances of all the types listed in the collection.
-		/// </summary>
-		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
-		/// <returns>A sequence of instances generated from types in this collection.  May be empty, but never null.</returns>
-		internal IEnumerable<T> CreateInstances(bool allowInternals) {
-			Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
-			return from element in this.Cast<TypeConfigurationElement<T>>()
-			       where !element.IsEmpty
-			       select element.CreateInstance(default(T), allowInternals);
-		}
 
 		/// <summary>
 		/// When overridden in a derived class, creates a new <see cref="T:System.Configuration.ConfigurationElement"/>.

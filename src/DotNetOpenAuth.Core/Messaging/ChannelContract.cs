@@ -33,22 +33,5 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(response, "response");
 			throw new NotImplementedException();
 		}
-
-		/// <summary>
-		/// Queues a message for sending in the response stream where the fields
-		/// are sent in the response stream in querystring style.
-		/// </summary>
-		/// <param name="response">The message to send as a response.</param>
-		/// <returns>
-		/// The pending user agent redirect based message to be sent as an HttpResponse.
-		/// </returns>
-		/// <remarks>
-		/// This method implements spec V1.0 section 5.3.
-		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			Requires.NotNull(response, "response");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -8,8 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
-	using System.Web;
-	using System.Web.Configuration;
 
 	/// <summary>
 	/// Represents the section in the host's .config file that configures
@@ -52,19 +50,5 @@ namespace DotNetOpenAuth.Configuration {
 			get { return ReportingElement.Configuration; }
 		}
 
-		/// <summary>
-		/// Gets a named section in this section group, or <c>null</c> if no such section is defined.
-		/// </summary>
-		/// <param name="name">The name of the section to obtain.</param>
-		/// <returns>The desired section, or null if it could not be obtained.</returns>
-		internal static ConfigurationSection GetNamedSection(string name) {
-			string fullyQualifiedSectionName = SectionName + "/" + name;
-			if (HttpContext.Current != null) {
-				return (ConfigurationSection)WebConfigurationManager.GetSection(fullyQualifiedSectionName);
-			} else {
-				var configuration = ConfigurationManager.OpenExeConfiguration(null);
-				return configuration != null ? configuration.GetSection(fullyQualifiedSectionName) : null;
-			}
-		}
 	}
 }
