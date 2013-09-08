@@ -4,8 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2
-{
+namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
@@ -20,8 +19,7 @@ namespace DotNetOpenAuth.OAuth2
 	/// The OAuth client for the user-agent flow, providing services for installed apps
 	/// and in-browser Javascript widgets.
 	/// </summary>
-	public class UserAgentClient : ClientBase
-	{
+	public class UserAgentClient : ClientBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
 		/// </summary>
@@ -29,8 +27,7 @@ namespace DotNetOpenAuth.OAuth2
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
-			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret))
-		{
+			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
 		}
 
 		/// <summary>
@@ -41,8 +38,7 @@ namespace DotNetOpenAuth.OAuth2
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier = null, string clientSecret = null)
-			: this(authorizationEndpoint, tokenEndpoint, clientIdentifier, DefaultSecretApplicator(clientSecret))
-		{
+			: this(authorizationEndpoint, tokenEndpoint, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
 		}
 
 		/// <summary>
@@ -56,8 +52,7 @@ namespace DotNetOpenAuth.OAuth2
 		/// May be <c>null</c> for clients with no secret or other means of authentication.
 		/// </param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
-			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientCredentialApplicator)
-		{
+			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientCredentialApplicator) {
 			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
 			Requires.NotNull(tokenEndpoint, "tokenEndpoint");
 		}
@@ -72,8 +67,7 @@ namespace DotNetOpenAuth.OAuth2
 		/// May be <c>null</c> for clients with no secret or other means of authentication.
 		/// </param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
-			: base(authorizationServer, clientIdentifier, clientCredentialApplicator)
-		{
+			: base(authorizationServer, clientIdentifier, clientCredentialApplicator) {
 		}
 
 		/// <summary>
@@ -86,10 +80,8 @@ namespace DotNetOpenAuth.OAuth2
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
-		public Uri RequestUserAuthorization(IEnumerable<string> scope = null, string state = null, Uri returnTo = null)
-		{
-			var authorization = new AuthorizationState(scope)
-			{
+		public Uri RequestUserAuthorization(IEnumerable<string> scope = null, string state = null, Uri returnTo = null) {
+			var authorization = new AuthorizationState(scope) {
 				Callback = returnTo,
 			};
 
@@ -109,8 +101,7 @@ namespace DotNetOpenAuth.OAuth2
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null)
-		{
+		public Uri RequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
@@ -124,20 +115,16 @@ namespace DotNetOpenAuth.OAuth2
 		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
 		/// <param name="authorizationState">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
-		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null)
-		{
+		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
 			Requires.NotNull(actualRedirectUrl, "actualRedirectUrl");
 
-			if (authorizationState == null)
-			{
+			if (authorizationState == null) {
 				authorizationState = new AuthorizationState();
 			}
 
-			MessageReceivingEndpoint e = new MessageReceivingEndpoint(actualRedirectUrl, HttpDeliveryMethods.GetRequest);
-
-			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(e, new System.Net.WebHeaderCollection());
-			if (response == null)
-			{
+			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
+			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(carrier);
+			if (response == null) {
 				return null;
 			}
 
@@ -152,23 +139,17 @@ namespace DotNetOpenAuth.OAuth2
 		/// <returns>
 		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
 		/// </returns>
-		internal IAuthorizationState ProcessUserAuthorization(IAuthorizationState authorizationState, IDirectedProtocolMessage response)
-		{
+		internal IAuthorizationState ProcessUserAuthorization(IAuthorizationState authorizationState, IDirectedProtocolMessage response) {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(response, "response");
 
 			EndUserAuthorizationSuccessAccessTokenResponse accessTokenSuccess;
 			EndUserAuthorizationSuccessAuthCodeResponse authCodeSuccess;
-			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null)
-			{
+			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
 				UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
-			}
-			else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null)
-			{
+			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
 				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
-			}
-			else if (response is EndUserAuthorizationFailedResponse)
-			{
+			} else if (response is EndUserAuthorizationFailedResponse) {
 				authorizationState.Delete();
 				return null;
 			}
@@ -189,13 +170,11 @@ namespace DotNetOpenAuth.OAuth2
 		/// <returns>
 		/// A message to send to the authorization server.
 		/// </returns>
-		internal EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null)
-		{
+		internal EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
-			if (authorization.Callback == null)
-			{
+			if (authorization.Callback == null) {
 				authorization.Callback = new Uri("http://localhost/");
 			}
 

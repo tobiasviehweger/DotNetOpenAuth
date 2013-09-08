@@ -103,6 +103,40 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets the protocol message that may be embedded in the given HTTP request.
+		/// </summary>
+		/// <param name="request">The request to search for an embedded message.</param>
+		/// <returns>
+		/// The deserialized message, if one is found.  Null otherwise.
+		/// </returns>
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
+
+			var fields = request.GetQueryStringBeforeRewriting().ToDictionary();
+
+			// Also read parameters from the fragment, if it's available.
+			// Typically the fragment is not available because the browser doesn't send it to a web server
+			// but this request may have been fabricated by an installed desktop app, in which case
+			// the fragment is available.
+			string fragment = request.GetPublicFacingUrl().Fragment;
+			if (!string.IsNullOrEmpty(fragment)) {
+				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
+					fields.Add(pair.Key, pair.Value);
+				}
+			}
+
+			MessageReceivingEndpoint recipient;
+			try {
+				recipient = request.GetRecipient();
+			} catch (ArgumentException ex) {
+				Logger.Messaging.WarnFormat("Unrecognized HTTP request: ", ex);
+				return null;
+			}
+
+			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
+		}
+
+		/// <summary>
 		/// Queues a message for sending in the response stream where the fields
 		/// are sent in the response stream in querystring style.
 		/// </summary>
