@@ -122,8 +122,8 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorizationState = new AuthorizationState();
 			}
 
-			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
-			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(carrier);
+			MessageReceivingEndpoint e = new MessageReceivingEndpoint(actualRedirectUrl, HttpDeliveryMethods.GetRequest);
+			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(e, new System.Net.WebHeaderCollection());
 			if (response == null) {
 				return null;
 			}
