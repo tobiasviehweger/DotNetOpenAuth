@@ -4,7 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.Messaging.Bindings {
+namespace DotNetOpenAuth.Messaging.Bindings
+{
 	using System;
 	using DotNetOpenAuth.Configuration;
 
@@ -12,11 +13,13 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// A message expiration enforcing binding element that supports messages
 	/// implementing the <see cref="IExpiringProtocolMessage"/> interface.
 	/// </summary>
-	internal class StandardExpirationBindingElement : IChannelBindingElement {
+	public class StandardExpirationBindingElement : IChannelBindingElement
+	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class.
 		/// </summary>
-		internal StandardExpirationBindingElement() {
+		public StandardExpirationBindingElement()
+		{
 		}
 
 		#region IChannelBindingElement Properties
@@ -25,7 +28,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Gets the protection offered by this binding element.
 		/// </summary>
 		/// <value><see cref="MessageProtections.Expiration"/></value>
-		MessageProtections IChannelBindingElement.Protection {
+		MessageProtections IChannelBindingElement.Protection
+		{
 			get { return MessageProtections.Expiration; }
 		}
 
@@ -41,7 +45,8 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <see cref="IExpiringProtocolMessage"/> interface can be before
 		/// being discarded as too old.
 		/// </summary>
-		protected internal static TimeSpan MaximumMessageAge {
+		public static TimeSpan MaximumMessageAge
+		{
 			get { return Configuration.DotNetOpenAuthSection.Messaging.MaximumMessageLifetime; }
 		}
 
@@ -55,9 +60,11 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message)
+		{
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
-			if (expiringMessage != null) {
+			if (expiringMessage != null)
+			{
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
 				return MessageProtections.Expiration;
 			}
@@ -78,14 +85,17 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message)
+		{
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
-			if (expiringMessage != null) {
+			if (expiringMessage != null)
+			{
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
 				// but just in case a given message failed to guarantee that, we do it here.
 				DateTime creationDate = expiringMessage.UtcCreationDate.ToUniversalTimeSafe();
 				DateTime expirationDate = creationDate + MaximumMessageAge;
-				if (expirationDate < DateTime.UtcNow) {
+				if (expirationDate < DateTime.UtcNow)
+				{
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
 

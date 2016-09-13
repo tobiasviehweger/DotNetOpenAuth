@@ -4,15 +4,18 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth {
+namespace DotNetOpenAuth.OAuth
+{
 	/// <summary>
 	/// Security settings that are applicable to consumers.
 	/// </summary>
-	internal class ConsumerSecuritySettings : SecuritySettings {
+	public class ConsumerSecuritySettings : SecuritySettings
+	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConsumerSecuritySettings"/> class.
 		/// </summary>
-		internal ConsumerSecuritySettings() {
+		public ConsumerSecuritySettings()
+		{
 		}
 	}
 }

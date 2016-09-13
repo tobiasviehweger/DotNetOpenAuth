@@ -4,7 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth.ChannelElements {
+namespace DotNetOpenAuth.OAuth.ChannelElements
+{
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -25,7 +26,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
 	/// </summary>
-	internal abstract class OAuthChannel : Channel {
+	public abstract class OAuthChannel : Channel
+	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
 		/// </summary>
@@ -38,7 +40,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="bindingElements">The binding elements.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
-			: base(messageTypeProvider, bindingElements) {
+			: base(messageTypeProvider, bindingElements)
+		{
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");
@@ -64,7 +67,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message with data to encode.</param>
 		/// <returns>A dictionary of name-value pairs with their strings encoded.</returns>
-		internal static IDictionary<string, string> GetUriEscapedParameters(IEnumerable<KeyValuePair<string, string>> message) {
+		internal static IDictionary<string, string> GetUriEscapedParameters(IEnumerable<KeyValuePair<string, string>> message)
+		{
 			var encodedDictionary = new Dictionary<string, string>();
 			UriEscapeParameters(message, encodedDictionary);
 			return encodedDictionary;
@@ -77,7 +81,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="request">The message to attach.</param>
 		/// <returns>The initialized web request.</returns>
-		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request) {
+		internal HttpWebRequest InitializeRequest(IDirectedProtocolMessage request)
+		{
 			Requires.NotNull(request, "request");
 
 			ProcessOutgoingMessage(request);
@@ -92,7 +97,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store) {
+		protected static List<IChannelBindingElement> InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store)
+		{
 			var bindingElements = new List<IChannelBindingElement> {
 				new OAuthHttpMethodBindingElement(),
 				signingBindingElement,
@@ -110,7 +116,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response)
+		{
 			string body = response.GetResponseReader().ReadToEnd();
 			return HttpUtility.ParseQueryString(body).ToDictionary();
 		}
@@ -122,25 +129,39 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The <see cref="HttpRequest"/> prepared to send the request.
 		/// </returns>
-		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request)
+		{
 			HttpWebRequest httpRequest;
 
 			HttpDeliveryMethods transmissionMethod = request.HttpMethods;
-			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
+			if ((transmissionMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0)
+			{
 				httpRequest = this.InitializeRequestAsAuthHeader(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0) {
+			}
+			else if ((transmissionMethod & HttpDeliveryMethods.PostRequest) != 0)
+			{
 				var requestMessageWithBinaryData = request as IMessageWithBinaryData;
 				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || !requestMessageWithBinaryData.SendAsMultipart, OAuthStrings.MultipartPostMustBeUsedWithAuthHeader);
 				httpRequest = this.InitializeRequestAsPost(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0) {
+			}
+			else if ((transmissionMethod & HttpDeliveryMethods.GetRequest) != 0)
+			{
 				httpRequest = InitializeRequestAsGet(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.HeadRequest) != 0) {
+			}
+			else if ((transmissionMethod & HttpDeliveryMethods.HeadRequest) != 0)
+			{
 				httpRequest = InitializeRequestAsHead(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0) {
+			}
+			else if ((transmissionMethod & HttpDeliveryMethods.PutRequest) != 0)
+			{
 				httpRequest = this.InitializeRequestAsPut(request);
-			} else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0) {
+			}
+			else if ((transmissionMethod & HttpDeliveryMethods.DeleteRequest) != 0)
+			{
 				httpRequest = InitializeRequestAsDelete(request);
-			} else {
+			}
+			else
+			{
 				throw new NotSupportedException();
 			}
 			return httpRequest;
@@ -155,12 +176,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response)
+		{
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
 			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
-			OutgoingWebResponse encodedResponse = new OutgoingWebResponse {
+			OutgoingWebResponse encodedResponse = new OutgoingWebResponse
+			{
 				Body = responseBody,
 				OriginalMessage = response,
 				Status = HttpStatusCode.OK,
@@ -183,11 +206,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="source">The dictionary with names and values to encode.</param>
 		/// <param name="destination">The dictionary to add the encoded pairs to.</param>
-		private static void UriEscapeParameters(IEnumerable<KeyValuePair<string, string>> source, IDictionary<string, string> destination) {
+		private static void UriEscapeParameters(IEnumerable<KeyValuePair<string, string>> source, IDictionary<string, string> destination)
+		{
 			Requires.NotNull(source, "source");
 			Requires.NotNull(destination, "destination");
 
-			foreach (var pair in source) {
+			foreach (var pair in source)
+			{
 				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
 				var value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				destination.Add(key, value);
@@ -199,13 +224,17 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <returns>"POST", "GET" or some other similar http verb.</returns>
-		private static string GetHttpMethod(IDirectedProtocolMessage message) {
+		private static string GetHttpMethod(IDirectedProtocolMessage message)
+		{
 			Requires.NotNull(message, "message");
 
 			var signedMessage = message as ITamperResistantOAuthMessage;
-			if (signedMessage != null) {
+			if (signedMessage != null)
+			{
 				return signedMessage.HttpMethod;
-			} else {
+			}
+			else
+			{
 				return MessagingUtilities.GetHttpVerb(message.HttpMethods);
 			}
 		}
@@ -220,15 +249,18 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// the server automatically.  If it is empty, the request stream must be sent by the caller.</para>
 		/// 	<para>This method implements OAuth 1.0 section 5.2, item #1 (described in section 5.4).</para>
 		/// </remarks>
-		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage) {
+		private HttpWebRequest InitializeRequestAsAuthHeader(IDirectedProtocolMessage requestMessage)
+		{
 			var dictionary = this.MessageDescriptions.GetAccessor(requestMessage);
 
 			// copy so as to not modify original
 			var fields = new Dictionary<string, string>();
-			foreach (string key in dictionary.DeclaredKeys) {
+			foreach (string key in dictionary.DeclaredKeys)
+			{
 				fields.Add(key, dictionary[key]);
 			}
-			if (this.Realm != null) {
+			if (this.Realm != null)
+			{
 				fields.Add("realm", this.Realm.AbsoluteUri);
 			}
 
@@ -236,7 +268,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			UriBuilder recipientBuilder = new UriBuilder(requestMessage.Recipient);
 			bool hasEntity = HttpMethodHasEntity(GetHttpMethod(requestMessage));
 
-			if (!hasEntity) {
+			if (!hasEntity)
+			{
 				MessagingUtilities.AppendQueryArgs(recipientBuilder, requestMessage.ExtraData);
 			}
 			httpRequest = (HttpWebRequest)WebRequest.Create(recipientBuilder.Uri);
@@ -245,21 +278,28 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, MessagingUtilities.AssembleAuthorizationHeader(Protocol.AuthorizationHeaderScheme, fields));
 
-			if (hasEntity) {
+			if (hasEntity)
+			{
 				// WARNING: We only set up the request stream for the caller if there is
 				// extra data.  If there isn't any extra data, the caller must do this themselves.
 				var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
-				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
+				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart)
+				{
 					// Include the binary data in the multipart entity, and any standard text extra message data.
 					// The standard declared message parts are included in the authorization header.
 					var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
 					multiPartFields.AddRange(requestMessage.ExtraData.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
 					this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
-				} else {
+				}
+				else
+				{
 					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
-					if (requestMessage.ExtraData.Count > 0) {
+					if (requestMessage.ExtraData.Count > 0)
+					{
 						this.SendParametersInEntity(httpRequest, requestMessage.ExtraData);
-					} else {
+					}
+					else
+					{
 						// We'll assume the content length is zero since the caller may not have
 						// anything.  They're responsible to change it when the add the payload if they have one.
 						httpRequest.ContentLength = 0;
@@ -274,17 +314,22 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Fills out the secrets in a message so that signing/verification can be performed.
 		/// </summary>
 		/// <param name="message">The message about to be signed or whose signature is about to be verified.</param>
-		private void SignatureCallback(ITamperResistantProtocolMessage message) {
+		private void SignatureCallback(ITamperResistantProtocolMessage message)
+		{
 			var oauthMessage = message as ITamperResistantOAuthMessage;
-			try {
+			try
+			{
 				Logger.Channel.Debug("Applying secrets to message to prepare for signing or signature verification.");
 				oauthMessage.ConsumerSecret = this.GetConsumerSecret(oauthMessage.ConsumerKey);
 
 				var tokenMessage = message as ITokenContainingMessage;
-				if (tokenMessage != null) {
+				if (tokenMessage != null)
+				{
 					oauthMessage.TokenSecret = this.TokenManager.GetTokenSecret(tokenMessage.Token);
 				}
-			} catch (KeyNotFoundException ex) {
+			}
+			catch (KeyNotFoundException ex)
+			{
 				throw new ProtocolException(OAuthStrings.ConsumerOrTokenSecretNotFound, ex);
 			}
 		}
