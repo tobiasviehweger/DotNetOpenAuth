@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OAuth
 		/// <summary>
 		/// Gets the security settings for this consumer.
 		/// </summary>
-		internal ConsumerSecuritySettings SecuritySettings { get; private set; }
+		public ConsumerSecuritySettings SecuritySettings { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.

@@ -4,7 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth {
+namespace DotNetOpenAuth.OAuth
+{
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
@@ -16,7 +17,8 @@ namespace DotNetOpenAuth.OAuth {
 	/// <summary>
 	/// A description of the endpoints on a Service Provider.
 	/// </summary>
-	public class ServiceProviderDescription {
+	public class ServiceProviderDescription
+	{
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
@@ -26,7 +28,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
 		/// </summary>
-		public ServiceProviderDescription() {
+		public ServiceProviderDescription()
+		{
 			this.ProtocolVersion = Protocol.Default.ProtocolVersion;
 		}
 
@@ -44,13 +47,17 @@ namespace DotNetOpenAuth.OAuth {
 		/// This is the URL that <see cref="OAuth.Messages.UnauthorizedTokenRequest"/> messages are directed to.
 		/// </remarks>
 		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
-		public MessageReceivingEndpoint RequestTokenEndpoint {
-			get {
+		public MessageReceivingEndpoint RequestTokenEndpoint
+		{
+			get
+			{
 				return this.requestTokenEndpoint;
 			}
 
-			set {
-				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.ParameterPrefix)) {
+			set
+			{
+				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.ParameterPrefix))
+				{
 					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
 				}
 
@@ -86,7 +93,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Gets the OAuth version supported by the Service Provider.
 		/// </summary>
-		internal Version Version {
+		internal Version Version
+		{
 			get { return Protocol.Lookup(this.ProtocolVersion).Version; }
 		}
 
@@ -94,7 +102,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// Creates a signing element that includes all the signing elements this service provider supports.
 		/// </summary>
 		/// <returns>The created signing element.</returns>
-		internal ITamperProtectionChannelBindingElement CreateTamperProtectionElement() {
+		public ITamperProtectionChannelBindingElement CreateTamperProtectionElement()
+		{
 			Contract.Requires(this.TamperProtectionElements != null);
 			return new SigningBindingElementChain(this.TamperProtectionElements.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
 		}
